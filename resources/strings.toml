@@ -1,0 +1,6 @@
+[strings]
+header = "NB"
+
+[arrays]
+tech1 = ["Swift", "UIKit"]
+tech2 = ["Rust"]
