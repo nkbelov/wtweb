@@ -5,6 +5,8 @@ body {
 main {
 	margin-left: 15%;
 	margin-right: auto;
+	max-width: 120ex;
+	padding-bottom: 20em;
 }
 
 h1 {
@@ -16,5 +18,32 @@ h1 {
 }
 
 .capsule {
-	
+	border-radius: 0.5em;
+	margin: 0.5em;
+	background-color: #F8F8FF;
+	padding: 0.5em;
+}
+
+.expl {
+	color: SlateGrey;
+}
+
+div.project {
+	border: 2px solid #8F9FAF;
+	border-radius: 2em;
+	padding: 1em;
+	display: inline-flex;
+	align-items: center;
+}
+
+div.project-desc {
+	display: inline-block;
+	margin: 1em;
+}
+
+img.app-icon {
+	margin: 0em 1em;
+	max-width: 6.4em;
+	max-height: 6.4em;
+	border-radius: 1em;
 }
