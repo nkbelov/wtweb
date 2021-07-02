@@ -1,5 +1,9 @@
 target/
 debug/
+certs/
 
 Cargo.lock
 .DS_Store
+
+.env
+Rocket.toml

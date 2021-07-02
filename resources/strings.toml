@@ -7,6 +7,8 @@ intro2 = "ldnflkadsnfljdsnf"
 
 undebitDesc = "Undebit is an expense tracking app. It has a carefully crafted UI with many standard elements, such as UITableView or UIScrollView, manually rewritten to achieve custom feeling. The app performs blazingly fast, being able to load and display hudreds of thousands of items within one frame."
 
+undebitLink = "https://apps.apple.com/us/app/undebit/id1569472635"
+
 [arrays]
 tech1 = ["Swift", "UIKit", "Core Animation", "Core Graphics"]
 tech2 = ["Rust", "C/C++", "StoreKit", "Assembly", "HTML/CSS"]
