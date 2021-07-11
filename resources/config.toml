@@ -1,9 +1,0 @@
-
-rerender = true
-
-[sources]
-styles = "resources/index.html"
-strings = "resources/strings.toml"
-
-[templates]
-index = "resources/index.hbs"

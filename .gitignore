@@ -6,4 +6,4 @@ Cargo.lock
 .DS_Store
 
 .env
-Rocket.toml
+Config.toml
