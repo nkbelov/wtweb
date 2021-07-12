@@ -5,6 +5,6 @@ certs/
 Cargo.lock
 .DS_Store
 
-.log
+*.log
 .env
 Config.toml

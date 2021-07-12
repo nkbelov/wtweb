@@ -1,5 +1,3 @@
-
-//use serde::{Serialize, Deserialize};
 use std::fs;
 use std::fs::{File};
 use std::net::{Ipv4Addr, SocketAddrV4};
@@ -28,7 +26,6 @@ impl Field {
 	}
 }
 
-//#[derive(Serialize, Deserialize)]
 pub struct Config {
 	pub socket: SocketAddrV4,
 
