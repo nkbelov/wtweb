@@ -9,6 +9,7 @@ use log::*;
 
 use actix_web::{get, dev::*, web, http, http::header::*, App, HttpServer, HttpResponse, Responder, Result};
 use actix_web::middleware::errhandlers::{ErrorHandlerResponse, ErrorHandlers};
+use actix_web::middleware;
 
 use config::Config;
 use file_server::FileServer;
@@ -92,17 +93,29 @@ fn setup_logging() -> LoggerHandle {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
-	let config = Config::load().unwrap();
+    let config = Config::load().unwrap();
     let _ = setup_logging();
 
-    HttpServer::new(|| {
-        App::new().service(index)
-                  .service(styles)
-                  .service(image)
-                  .data(FileServer::in_dir(PathBuf::from_str("resources/").unwrap()))
-                  .wrap(ErrorHandlers::new().handler(http::StatusCode::NOT_FOUND, render_404))
-    })
-    .bind(&config.socket)?
-    .run()
-    .await
+    let mut server = HttpServer::new(|| {
+        App::new()
+            .wrap(middleware::Logger::default())
+            .service(index)
+            .service(styles)
+            .service(image)
+            .data(FileServer::in_dir(PathBuf::from_str("resources/").unwrap()))
+            .wrap(ErrorHandlers::new().handler(http::StatusCode::NOT_FOUND, render_404))
+    });
+
+    match config.rustls_config() {
+        Some(tlsconfig) => {
+            server = server.bind_rustls(&config.socket(), tlsconfig)?;
+        }
+
+        None => {
+            server = server.bind(&config.socket())?;
+        }
+    }
+    
+
+    server.run().await
 }

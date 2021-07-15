@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 log = "0.4"
 flexi_logger = { version = "0.18", features = ["async", "specfile", "compress"] }
-rustls = "0.18"
+rustls = { version = "0.18", features = ["logging"] }
 actix-web = { version = "3", features = ["rustls"] }
 actix-files = "0.3"
 toml = "0.5"
