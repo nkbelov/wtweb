@@ -2,9 +2,11 @@
 mod config;
 mod file_server;
 mod helpers;
+mod blog;
 
 use std::str::FromStr;
 use std::path::PathBuf;
+use std::fs;
 use log::*;
 
 use actix_web::{get, dev::*, web, http, http::header::*, App, HttpServer, HttpResponse, Responder, Result};
@@ -93,7 +95,9 @@ fn setup_logging() -> LoggerHandle {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
+
     let config = Config::load().unwrap();
+    fs::create_dir(&config.temp_dir())?;
     let _ = setup_logging();
 
     let mut server = HttpServer::new(|| {
@@ -102,6 +106,10 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .service(styles)
             .service(image)
+            .route("/", web::post().to(|| HttpResponse::MethodNotAllowed()))
+            .route("/", web::put().to(|| HttpResponse::MethodNotAllowed()))
+            .route("/", web::patch().to(|| HttpResponse::MethodNotAllowed()))
+            .route("/", web::delete().to(|| HttpResponse::MethodNotAllowed()))
             .data(FileServer::in_dir(PathBuf::from_str("resources/").unwrap()))
             .wrap(ErrorHandlers::new().handler(http::StatusCode::NOT_FOUND, render_404))
     });
@@ -117,5 +125,8 @@ async fn main() -> std::io::Result<()> {
     }
     
 
-    server.run().await
+    let ret = server.run().await;
+    fs::remove_dir_all(&config.temp_dir());
+
+    ret
 }
