@@ -1,11 +1,17 @@
 <div class="index">
-    <p>My name is Nick, I'm an iOS developer. I know Swift very well, Rust relatively well and</p>
+    <h1>Hi, I'm Nick!</h1>
 
-    <p>I made Undebit, a minimalistic and very fast expense tracker.</p>
+    <p>I'm an iOS developer. I know Swift very well and Rust relatively well. I can read assembly. I also know some web things, as you may see. Black is a nice colour. Yes, I use British spellings.</p>
 
-    <h2>Digital garden</h2>
-    <p>Opinionated, personal, imperfect by design</p>
-    {{#each posts}}
-        {{> garden_preview this}}
-    {{/each}}
+    <p>I made <a href="https://apps.apple.com/us/app/undebit/id1569472635">Undebit</a>, a minimalistic and very fast expense tracking app.</p>
+    <br>
+    <div class="dg-header">
+        <h2>Digital Garden</h2>
+        <p>Opinionated, personal, imperfect by design collection of notes that evolves with time.</p>
+    </div>
+    <div class="cards">
+        {{#each posts}}
+            {{> garden_preview this}}
+        {{/each}}
+    </div>
 </div>

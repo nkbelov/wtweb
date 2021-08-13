@@ -1,0 +1,98 @@
+
+$font-main: 'Noto Serif', serif
+$font-heading: 'Noto Sans', sans-serif
+$font-ms: 'Space Mono', monospace
+
+$bg: #121214
+$garden-accent: #41BD79
+$text: #FCFAFA
+$text-hl: #128FE2
+$card-bg: #1B1F22
+$code-bg: #0F3A57
+
+html
+    box-sizing: border-box
+
+body
+    font-family: $font-main
+    background: $bg
+    color: $text
+    margin: 0 2rem
+
+a
+    color: $text-hl
+    text-decoration: none
+
+
+h1, h2, h3, h4, h5, h6
+    font-family: $font-heading
+
+    code
+        // Remove code-specific background from headings
+        background-color: inherit
+
+main
+    max-width: 40rem
+    margin: 0 auto
+    font-size: 1.2rem
+
+code
+    background-color: $code-bg
+    border-radius: 5px
+    padding: 2px 3px
+
+.dg-header
+    //border: blue 2px solid
+    h2
+        overflow: hidden
+        text-align: left
+
+    h2:after
+        background-color: $garden-accent
+        content: ""
+        display: inline-block
+        height: 0.2rem
+        position: relative
+        vertical-align: baseline
+        width: 100%
+        //border: red 2px solid
+
+    h2:after 
+        left: 0.5em
+        margin-right: -500%
+
+.cards
+    display: flex
+    flex-wrap: wrap
+    justify-content: center
+    width: 100%
+
+.gprev
+    transition: all .2s ease-in-out
+    background: $card-bg
+    //box-shadow: $bg 10px -10px 0px -3px, $garden-accent 10px -10px
+    //box-shadow: $card-bg 0px 2px 4px 0px
+    //display: flex
+    margin: 15px
+    //padding: 10px
+    border-radius: 5px
+    width: 40%
+    text-align: center
+    position: relative
+
+    &:hover
+        transform: scale(1.05)
+
+    *
+        display: inline-block
+        
+    .maturity
+        position: absolute
+        top: 0px
+        right: 0px
+        font-family: $font-ms
+        color: $garden-accent
+        margin: 5px
+        font-size: 1.7rem
+        text-align: right
+        

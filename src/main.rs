@@ -20,11 +20,48 @@ use flexi_logger::{Logger, LogSpecification, LoggerHandle, FileSpec, Duplicate, 
 
 #[get("/images/{name}")]
 async fn image(fs: web::Data<FileServer>, name: web::Path<String>) -> HttpResponse {
+    
     match fs.get_image(name.path()).await {
         Some(bytes) => {
             HttpResponse::Ok()
                 .content_type("image")
                 .body(bytes)
+        }
+
+        None => {
+            debug!("Not found {}", name.path());
+            HttpResponse::NotFound()
+                .finish()
+        }
+    }
+}
+
+#[get("/{path}")]
+async fn misc(fs: web::Data<FileServer>, path: web::Path<String>) -> HttpResponse {
+    debug!("Received request for {}", path.path());
+    match fs.get_misc(path.path()).await {
+        Some((bytes, mime)) => {
+            debug!("Found {}", path.path());
+            HttpResponse::Ok()
+                .content_type(mime)
+                .body(bytes)
+        }
+
+        None => {
+            debug!("Not found {}", path.path());
+            HttpResponse::NotFound()
+                .finish()
+        }
+    }
+}
+
+#[get("/garden/{post}")]
+async fn garden(fs: web::Data<FileServer>, post: web::Path<String>) -> HttpResponse {
+    match fs.get_post(post.path()).await {
+        Some(body) => {
+            HttpResponse::Ok()
+                .content_type("text/html;charset=\"utf-8\"")
+                .body(body)
         }
 
         None => {
@@ -55,7 +92,7 @@ async fn index(fs: web::Data<FileServer>) -> HttpResponse {
     match fs.get_index().await {
         Some(body) => {
             HttpResponse::Ok()
-                .content_type("text/html")
+                .content_type("text/html;charset=\"utf-8\"")
                 .body(body)
         }
 
@@ -107,6 +144,8 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .service(styles)
             .service(image)
+            .service(garden)
+            .service(misc)
             .route("/", web::post().to(|| HttpResponse::MethodNotAllowed()))
             .route("/", web::put().to(|| HttpResponse::MethodNotAllowed()))
             .route("/", web::patch().to(|| HttpResponse::MethodNotAllowed()))

@@ -4,7 +4,7 @@ use std::fs;
 use log::*;
 use toml;
 use serde::{Serialize, Deserialize};
-//use serde_json;
+use serde_json;
 use handlebars::*;
 //use std::collections::HashMap;
 
@@ -21,30 +21,42 @@ fn render_markdown(h: &Helper<'_, '_>, _: &Handlebars<'_>, _: &Context, _: &mut 
 	Ok(())
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct GardenPrev {
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct PostMeta {
 	title: String,
-	maturity: String
+	maturity: String,
+	filename: String,
+	path: String,
+	tags: Vec<String>
 }
 
-type Posts = Vec<GardenPrev>;
+type Posts = Vec<PostMeta>;
 
-#[derive(Serialize)]
+#[derive(Deserialize)]
+struct Garden {
+	posts: Posts
+}
+
+
+#[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
-enum PageType {
+#[serde(tag = "type", content="c")]
+pub enum PageType {
 	Index,
-	P404
+	E404,
+	Post(String)
+}
+
+#[derive(Serialize, Debug)]
+struct Post {
+	text: String
 }
 
 #[derive(Serialize)]
 struct Ctx {
 	page_type: PageType,
-	posts: Posts
-}
-
-#[derive(Deserialize)]
-struct Garden {
-	posts: Posts
+	posts: Posts,
+	post: Option<Post>
 }
 
 impl Ctx {
@@ -53,8 +65,7 @@ impl Ctx {
 		let toml = fs::read_to_string(&path).unwrap();
 		let garden: Garden = toml::from_str(&toml).unwrap();
 		let posts = garden.posts;
-		dbg!(&posts);
-		Self { page_type, posts }
+		Self { page_type, posts, post: None }
 	}
 }
 
@@ -78,28 +89,55 @@ impl FileServer {
 		path
 	}
 
-	fn page_type(name: &str) -> PageType {
-		match name {
-			"index" => PageType::Index,
-			"p404" => PageType::P404,
-			_ => PageType::P404
+	fn misc_path(&self, path: &str) -> PathBuf {
+		let mut mpath = self.base_dir.clone();
+		mpath.push("misc");
+		mpath.push(path);
+		mpath
+	}
+
+	fn mime(ext: &str) -> Option<&'static str> {
+		match ext {
+			"webmanifest" => Some("application/manifest+json"),
+			"png" => Some("image/png"),
+			_ => None
 		}
 	}
 
-	pub async fn get_html(&self, name: &str) -> Option<String> {
-		let mut hbs = Handlebars::new();
-		debug!("Getting page with {}", name);
 
-		for tmpl in &vec!["base", "index", "garden_post", "garden_preview", "p404"] {
+	fn read_post(&self, name: &str) -> Option<String> {
+		let mut path = self.base_dir.clone();
+		path.push("garden");
+		path.push(name);
+		path.set_extension("md");
+
+		info!("Garden: Looking for {:?}", &path);
+
+		fs::read_to_string(&path).ok()
+	}
+
+	pub async fn get_html(&self, t: PageType) -> Option<String> {
+		// Prepare Handlebars
+		let mut hbs = Handlebars::new();
+		debug!("Getting page with {:?}", t);
+
+		for tmpl in &vec!["base", "index", "post", "garden_preview", "p404"] {
 			debug!("Registring template {}: {:?}", tmpl, hbs.register_template_file(tmpl, self.templ_path(tmpl)));
 		}
 
 		hbs.register_helper("markdown", Box::new(render_markdown));
 
-		let ctx = Ctx::new(Self::page_type(name));
+		// Create and populate rendering context
+		let mut ctx = Ctx::new(t.clone());
+		if let PageType::Post(name) = &t {
+			let post = self.read_post(name).and_then(|text| Some(Post { text }));
+			debug!("Found {:?} for post with name {}", post, name);
+			ctx.post = post;
+		}
+		debug!("Produced context: {:?}", serde_json::to_string_pretty(&ctx));
 
 		let result = hbs.render("base", &ctx).ok()?;
-		debug!("Successfully rendered HTML {}", name);
+		debug!("Successfully rendered HTML {:?}", &t);
 		Some(result)
 	}
 
@@ -116,17 +154,31 @@ impl FileServer {
 	pub async fn get_styles(&self) -> Option<String> {
 		let mut path = self.base_dir.clone();
 		path.push("styles");
+		path.push("styles");
 		path.set_extension("css");
 
 		fs::read_to_string(&path).ok()
 	}
 
 	pub async fn get_index(&self) -> Option<String> {
-		self.get_html("index").await
+		self.get_html(PageType::Index).await
 	}
 
 	pub async fn get_404(&self) -> Option<String> {
-		self.get_html("p404").await
+		self.get_html(PageType::E404).await
+	}
+
+	pub async fn get_post(&self, name: &str) -> Option<String> {
+		self.get_html(PageType::Post(name.to_owned())).await
+	}
+
+	pub async fn get_misc(&self, path: &str) -> Option<(Vec<u8>, &'static str)> {
+		let mpath = self.misc_path(path);
+		let ext = mpath.extension()?.to_str()?;
+		let mime = Self::mime(&ext)?;
+		let bytes = fs::read(&mpath).ok()?;
+
+		Some((bytes, mime))
 	}
 
 }

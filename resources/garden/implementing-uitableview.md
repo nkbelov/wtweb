@@ -4,7 +4,7 @@ List views are basically omnipresent in apps.
 
 Because these views really display their items as a list, not as a table, I will go on with using the term *list view* in this post.
 
-If you have used Things, you are very likely aware of it’s unique feel. I can say with quite a great certainty that they use their own implementation of list views — I once spotted a very subtle bug that indicated it was a custom component. 
+If you have used Things, you are very likely aware of its unique feel. I can say with quite a great certainty that they use their own implementation of list views — I once spotted a very subtle bug that indicated it was a custom component. 
 
 In reality, list views are not complicated components. Yes, if you look at all of the features of UITableView, like VoiceOver support or drag-and-drop, it might seem daunting to think about the volume of work that needs to be put into it, but the core logic is actually quite simple. The implementation that Undebit uses at this point is really only 1250 lines of code large, including lengthy comments and assertion tests — and while that *might* sound like a somewhat large number, it is nowhere close to the amount of code that typical projects have, and it indeed is just a minuscule fraction of Undebit’s codebase.
 
@@ -30,3 +30,7 @@ But pre-iOS5, there was no Auto Layout, so you would need to specify the exact p
 So finally, meet `layoutSubviews()`. It’s a method on `UIView` that you override to manually set the positions and sizes of your views. It is actually the method — when not overridden — that internally triggers the Auto Layout engine and makes it figure out the positions and sizes of subviews on its own. Here, we will write out own layout logic that 
 
 You are not supposed to call `layoutSubvews()` yourself (although if you do, nothing really terrible happens). Instead, it will be called by the UIKit each frame if the internal `needsLayout` flag is set: basically, each frame, which is 60 or 120 times per second, depending on the device, UIKit will traverse the view hierarchy, look for this flag on them and call `layoutSubviews()`. This is simply done for performance and battery reasons: most of the time the content of our views remains the same, so there’s no real need in re-drawing the same content each frame. 
+
+```swift
+let f = kek()
+```
