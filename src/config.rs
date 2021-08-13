@@ -18,6 +18,7 @@ pub struct Config {
 	host: Ipv4Addr,
 	port: u16,
 	use_tls: bool,
+	temp_dir: String,
 
 	tls_files: Option<TlsFiles>
 }
@@ -35,6 +36,10 @@ impl Config {
 		let conf: Self = toml::from_slice(&bytes).ok()?;
 
 		Some(conf)
+	}
+
+	pub fn temp_dir(&self) -> &str {
+		&self.temp_dir
 	}
 
 	pub fn socket(&self) -> SocketAddrV4 {

@@ -2,14 +2,15 @@
 mod config;
 mod file_server;
 mod helpers;
-mod blog;
+//mod blog;
+mod markdown;
 
 use std::str::FromStr;
 use std::path::PathBuf;
 use std::fs;
 use log::*;
 
-use actix_web::{get, dev::*, web, http, http::header::*, App, HttpServer, HttpResponse, Responder, Result};
+use actix_web::{get, dev::*, web, http, http::header::*, App, HttpServer, HttpResponse, Result};
 use actix_web::middleware::errhandlers::{ErrorHandlerResponse, ErrorHandlers};
 use actix_web::middleware;
 
@@ -82,7 +83,7 @@ fn render_404<B: 'static>(mut response: ServiceResponse<B>) -> Result<ErrorHandl
 
 fn setup_logging() -> LoggerHandle {
     let mut builder = LogSpecification::builder();
-    builder.default(LevelFilter::Info);
+    builder.default(LevelFilter::Debug);
 
     let logger = Logger::with(builder.finalize())
                             .log_to_file(FileSpec::default())
@@ -97,7 +98,7 @@ async fn main() -> std::io::Result<()> {
 
 
     let config = Config::load().unwrap();
-    fs::create_dir(&config.temp_dir())?;
+    let _ = fs::create_dir(&config.temp_dir());
     let _ = setup_logging();
 
     let mut server = HttpServer::new(|| {
@@ -126,7 +127,7 @@ async fn main() -> std::io::Result<()> {
     
 
     let ret = server.run().await;
-    fs::remove_dir_all(&config.temp_dir());
+    let _ = fs::remove_dir_all(&config.temp_dir());
 
     ret
 }

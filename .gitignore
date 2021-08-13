@@ -1,6 +1,7 @@
 target/
 debug/
 tls/
+tmp/
 
 Cargo.lock
 .DS_Store
