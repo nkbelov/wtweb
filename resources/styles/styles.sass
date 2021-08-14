@@ -1,14 +1,14 @@
 
-$font-main: 'Noto Serif', serif
+$font-main: 'PT Sans', sans-serif
 $font-heading: 'Noto Sans', sans-serif
-$font-ms: 'Space Mono', monospace
+$font-ms: 'Inconsolata', monospace
 
 $bg: #121214
 $garden-accent: #41BD79
 $text: #FCFAFA
 $text-hl: #128FE2
 $card-bg: #1B1F22
-$code-bg: #0F3A57
+$code-bg: #323C43
 
 $phone: 640px
 $tablet: 768px
@@ -56,14 +56,28 @@ h1, h2, h3, h4, h5, h6
         background-color: inherit
 
 main
-    max-width: 40rem
-    margin: 0 auto
+    max-width: 50rem
+    margin: 0 auto 10rem
     font-size: 1.2rem
 
 code
+    font-family: $font-ms
     background-color: $code-bg
     border-radius: 5px
     padding: 2px 3px
+
+.code
+    background-color: $code-bg
+
+pre
+    padding: 10px
+    font-size: 1rem
+    overflow-x: scroll
+    overflow-y: hidden
+
+pre
+    code
+        background-color: transparent
 
 .dg-header
     //border: blue 2px solid

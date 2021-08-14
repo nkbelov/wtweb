@@ -4,24 +4,3 @@ tags = ["Swift", "iOS"]
 filename = "implementing-uitableview.md"
 path = "implementing-uitableview"
 maturity = "01"
-
-[[posts]]
-title = "Proud force-unwrapping"
-tags = ["Swift", "iOS"]
-filename = "implementing-uitableview.md"
-path = "implementing-uitableview"
-maturity = "11"
-
-[[posts]]
-title = "Some other post"
-tags = ["Swift", "iOS"]
-filename = "implementing-uitableview.md"
-path = "implementing-uitableview"
-maturity = "10"
-
-[[posts]]
-title = "Infinite scrolling"
-tags = ["Swift", "iOS"]
-filename = "implementing-uitableview.md"
-path = "implementing-uitableview"
-maturity = "01"
