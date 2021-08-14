@@ -100,6 +100,9 @@ impl FileServer {
 		match ext {
 			"webmanifest" => Some("application/manifest+json"),
 			"png" => Some("image/png"),
+			"svg" => Some("image/svg+xml"),
+			"ico" => Some("image/vnd.microsoft.icon"),
+			"xml" => Some("application/xml"),
 			_ => None
 		}
 	}
