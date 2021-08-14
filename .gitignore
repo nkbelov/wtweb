@@ -9,3 +9,6 @@ Cargo.lock
 *.log
 .env
 Config.toml
+
+*.css
+*.css.map

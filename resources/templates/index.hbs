@@ -9,9 +9,9 @@
         <h2>Digital Garden</h2>
         <p>Opinionated, personal, imperfect by design collection of notes that evolves with time.</p>
     </div>
-    <div class="cards">
+    <ul class="garden-links">
         {{#each posts}}
-            {{> garden_preview this}}
+            <li>{{> garden_preview this}}</li>
         {{/each}}
-    </div>
+    </ul>
 </div>
