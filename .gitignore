@@ -10,5 +10,5 @@ Cargo.lock
 .env
 Config.toml
 
-*.css
+resources/styles/*.css
 *.css.map
