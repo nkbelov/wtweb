@@ -4,3 +4,10 @@ tags = ["Swift", "iOS"]
 filename = "implementing-uitableview.md"
 path = "implementing-uitableview"
 maturity = "01"
+
+[[posts]]
+title = "Proud force-unwrapping"
+tags = ["Swift"]
+filename = "proud-force-unwrapping.md"
+path = "proud-force-unwrapping"
+maturity = "01"

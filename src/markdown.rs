@@ -1,4 +1,4 @@
-use pulldown_cmark::{Parser};
+use pulldown_cmark::{Parser, Options};
 
 use std::collections::HashMap;
 use std::io::{self};
@@ -93,7 +93,7 @@ where
 						let ts = ThemeSet::load_defaults();
 
 						let syntax = ps.find_syntax_by_name("Swift").unwrap();
-						let mut h = HighlightLines::new(syntax, &ts.themes["base16-ocean.dark"]);
+						let mut h = HighlightLines::new(syntax, &ts.themes["base16-eighties.dark"]);
 						let regions = h.highlight(&text, &ps);
 						let html = styled_line_to_highlighted_html(&regions[..], IncludeBackground::No);
 						self.write(&html)?;
@@ -403,7 +403,9 @@ where
 }
 
 pub fn render_default(md: &str) -> String {
-	let parser = Parser::new(md);
+    let mut options = Options::empty();
+    options.insert(Options::ENABLE_FOOTNOTES);
+	let parser = Parser::new_ext(md, options);
 	let mut result = String::new();
 	push_html(&mut result, parser);
 	result
