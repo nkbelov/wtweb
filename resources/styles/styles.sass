@@ -7,6 +7,7 @@ $bg: #121214
 $garden-accent: #41BD79
 $text: #FCFAFA
 $text-hl: #128FE2
+$text-sub: #95979A
 $card-bg: #1B1F22
 $code-bg: #191e22
 
@@ -35,9 +36,19 @@ a
 
 header
     margin-top: 2rem
+    margin-bottom: 2rem
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+    *
+        display: block
+
+    a
+        font-size: 1.3rem
+        color: inherit
 
     #icon
-        display: block
         margin-left: auto
         margin-right: auto
 
@@ -105,16 +116,45 @@ pre
         margin-right: -500%
 
 .garden-links
-    li
+    li    
         margin: .2em 0
+        list-style: none
+        
+        &::before
+            content: "\2022"
+            color: $garden-accent
+            font-weight: bold
+            display: inline-block
+            width: 1em
+            margin-left: -1em
         a
-            text-decoration: underline dashed
-            text-decoration-color: $garden-accent
-            text-underline-offset: 3px
             color: inherit
+
+.gprevlarge
+    margin: 1.5rem 0
+    a
+        color: inherit
+    .tags
+        margin: 0.5rem 0
+    .tag
+        margin: 0 2px
+        border: $garden-accent 1px solid
+        padding: 2px 5px
+        border-radius: 5px
+        font-size: 1rem
+        color: $garden-accent
+    .meta
+        font-size: 1rem
+        color: $text-sub
+
 
 .footnote-definition
     font-size: 0.9rem
     p
         display: inline
+
+.scream
+    margin: 0 auto
+    text-align: center
+    font-size: 5rem
         

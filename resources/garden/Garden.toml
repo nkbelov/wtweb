@@ -1,13 +1,15 @@
 [[posts]]
 title = "Implementing UITableView"
-tags = ["Swift", "iOS"]
+tags = ["Swift", "UIKit"]
 filename = "implementing-uitableview.md"
 path = "implementing-uitableview"
-maturity = "01"
+maturity = "🌿"
+last_tended = "16.08.2021"
 
 [[posts]]
 title = "Proud force-unwrapping"
 tags = ["Swift"]
 filename = "proud-force-unwrapping.md"
 path = "proud-force-unwrapping"
-maturity = "01"
+maturity = "🌿 🌿 🌿"
+last_tended = "15.08.2021"

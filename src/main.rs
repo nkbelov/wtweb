@@ -55,8 +55,24 @@ async fn misc(fs: web::Data<FileServer>, path: web::Path<String>) -> HttpRespons
     }
 }
 
+#[get("/garden")]
+async fn garden(fs: web::Data<FileServer>) -> HttpResponse {
+    match fs.get_garden_overview().await {
+        Some(body) => {
+            HttpResponse::Ok()
+                .content_type("text/html;charset=\"utf-8\"")
+                .body(body)
+        }
+
+        None => {
+            HttpResponse::NotFound()
+                .finish()
+        }
+    }
+}
+
 #[get("/garden/{post}")]
-async fn garden(fs: web::Data<FileServer>, post: web::Path<String>) -> HttpResponse {
+async fn garden_post(fs: web::Data<FileServer>, post: web::Path<String>) -> HttpResponse {
     match fs.get_post(post.path()).await {
         Some(body) => {
             HttpResponse::Ok()
@@ -145,6 +161,7 @@ async fn main() -> std::io::Result<()> {
             .service(styles)
             .service(image)
             .service(garden)
+            .service(garden_post)
             .service(misc)
             .route("/", web::post().to(|| HttpResponse::MethodNotAllowed()))
             .route("/", web::put().to(|| HttpResponse::MethodNotAllowed()))

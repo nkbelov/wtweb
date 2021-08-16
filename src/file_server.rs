@@ -27,7 +27,8 @@ struct PostMeta {
 	maturity: String,
 	filename: String,
 	path: String,
-	tags: Vec<String>
+	tags: Vec<String>,
+	last_tended: String
 }
 
 type Posts = Vec<PostMeta>;
@@ -39,11 +40,12 @@ struct Garden {
 
 
 #[derive(Serialize, Clone, Debug)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 #[serde(tag = "type", content="c")]
 pub enum PageType {
 	Index,
 	E404,
+	GardenOverview,
 	Post(String)
 }
 
@@ -124,7 +126,7 @@ impl FileServer {
 		let mut hbs = Handlebars::new();
 		debug!("Getting page with {:?}", t);
 
-		for tmpl in &vec!["base", "index", "post", "garden_preview", "p404"] {
+		for tmpl in &vec!["base", "index", "post", "garden_preview", "e404", "garden_overview", "garden_preview_large"] {
 			debug!("Registring template {}: {:?}", tmpl, hbs.register_template_file(tmpl, self.templ_path(tmpl)));
 		}
 
@@ -173,6 +175,10 @@ impl FileServer {
 
 	pub async fn get_post(&self, name: &str) -> Option<String> {
 		self.get_html(PageType::Post(name.to_owned())).await
+	}
+
+	pub async fn get_garden_overview(&self) -> Option<String> {
+		self.get_html(PageType::GardenOverview).await
 	}
 
 	pub async fn get_misc(&self, path: &str) -> Option<(Vec<u8>, &'static str)> {

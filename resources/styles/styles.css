@@ -26,10 +26,28 @@ a {
 
 header {
   margin-top: 2rem;
+  margin-bottom: 2rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+header * {
+  display: block;
+}
+
+header a {
+  font-size: 1.3rem;
+  color: inherit;
 }
 
 header #icon {
-  display: block;
   margin-left: auto;
   margin-right: auto;
 }
@@ -106,15 +124,46 @@ pre code {
 
 .garden-links li {
   margin: .2em 0;
+  list-style: none;
+}
+
+.garden-links li::before {
+  content: "\2022";
+  color: #41BD79;
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
 }
 
 .garden-links li a {
-  -webkit-text-decoration: underline dashed;
-          text-decoration: underline dashed;
-  -webkit-text-decoration-color: #41BD79;
-          text-decoration-color: #41BD79;
-  text-underline-offset: 3px;
   color: inherit;
+}
+
+.gprevlarge {
+  margin: 1.5rem 0;
+}
+
+.gprevlarge a {
+  color: inherit;
+}
+
+.gprevlarge .tags {
+  margin: 0.5rem 0;
+}
+
+.gprevlarge .tag {
+  margin: 0 2px;
+  border: #41BD79 1px solid;
+  padding: 2px 5px;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #41BD79;
+}
+
+.gprevlarge .meta {
+  font-size: 1rem;
+  color: #95979A;
 }
 
 .footnote-definition {
@@ -123,5 +172,11 @@ pre code {
 
 .footnote-definition p {
   display: inline;
+}
+
+.scream {
+  margin: 0 auto;
+  text-align: center;
+  font-size: 5rem;
 }
 /*# sourceMappingURL=styles.css.map */
