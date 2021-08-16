@@ -4,7 +4,7 @@
 
 When I just started writing [Undebit](https://apps.apple.com/us/app/undebit/id1569472635), I had an idea to use a table view cell animation similar to what one of my favourite apps ever, [Things 3](https://culturedcode.com/things/), has. I discovered quite soon that implementing such animation with the native `UITableView` was either impossible or incredibly burdensome, and simultaneously I noticed that Things 3 doesn’t use `UITableView` — they have their custom implementation (besides their highly specific design, there is a subtle visual bug that clearly indicates they're using custom code). Being adventurous as I usually am, I wrote a custom one for my app too — and even though, ironically, I decided not to use the animation I originally planned, this custom implementation eventually replaced all occurrences of `UITableView` within Undebit. 
 
-This was quite a journey for a couple of reasons: because writing custom UI is deemed expensive, if your needs are alrady mostly covered by UIKit, there's not much reason for you to roll out a complicated component — but this also means that if people do it rarely, they write *about* it even more rarely, too, so the information I went off was extremely scarce. Second, UIKit relies on a lot of not only undocumented behaviour, but also private APIs that are simply inaccessible to us.
+This was quite a journey for a couple of reasons: because writing custom UI is deemed expensive, if your needs are already mostly covered by UIKit, there's not much reason for you to roll out a complicated component — but this also means that if people do it rarely, they write *about* it even more rarely, too, so the information I went off was extremely scarce. Second, UIKit relies on a lot of not only undocumented behaviour, but also private APIs that are simply inaccessible to us.
 
 Still, I’m writing this to show several things: first, there’s not much stuff in the UIKit that you *have* to rely upon. You really only have to use `UIView` for obvious reasons and perhaps `UIScrollView` because you don’t want to spend ages on guessing the deceleration constants that make it feel like the native one. Second, writing custom stuff is not *that* expensive. It will be a leap when you’re dealing with it for the first time because the documentation is extremely lacking, but if you understand how UIKit’s internals work, writing custom UI can turn from a struggle into a rewarding routine. As such, this is probably less of a normal tutorial than an exploration document, aiming to list different considerations one might go into when writing their custom UI. Nothing written here is prescriptive — I provide my reasoning behind the choices I make, but it's exactly the point of writing custom code to deviate from some common behaviour if your implementation needs it.
 
@@ -34,9 +34,9 @@ But pre-iOS5, there was no Auto Layout, so you would need to specify the exact p
 
 As such, we will work with `layoutSubviews()` directly. It’s a method on `UIView` that you override to manually set the positions and sizes of your views. It is actually this same method — when not overridden — that internally triggers the Auto Layout engine and makes it figure out the positions and sizes of subviews on its own. Here, we will write out own layout logic that instead performs this task manually.
 
-You are not supposed to call `layoutSubvews()` yourself (although if you do, usually nothing really terrible happens). Instead, it is called by the UIKit if the internal `needsLayout` flag is set: each frame, which is 60 or 120 times per second, depending on the device, UIKit will traverse the view hierarchy, look for this flag on the views and call `layoutSubviews()` if they have it set. This helps with performance and concerves the battery, as only views that explicitly signal that they have to perform a layout pass will be asked do it, and only do it once per frame.
+You are not supposed to call `layoutSubvews()` yourself (although if you do, usually nothing really terrible happens). Instead, it is called by the UIKit if the internal `needsLayout` flag is set: each frame, which is 60 or 120 times per second, depending on the device, UIKit will traverse the view hierarchy, look for this flag on the views and call `layoutSubviews()` if they have it set. This helps with performance and conserves the battery, as only views that explicitly signal that they have to perform a layout pass will be asked do it, and only do it once per frame.
 
-To signal that a view wishes to perform a layout pass, `setNeedsLayout()` is called. You can call this method youself is something within a view's state dictates that its subviews need to be rearranged (for example, in response to a `UIGestureRecognizer`'s callbacks). But more importantly, this function will also be called automatically on certain fundamental events: for example, when the view has just been added to the hierarchy and needs to perform its first layout pass — or, of most interest to us — when its `bounds` change.
+To signal that a view wishes to perform a layout pass, `setNeedsLayout()` is called. You can call this method yourself is something within a view's state dictates that its subviews need to be rearranged (for example, in response to a `UIGestureRecognizer`'s callbacks). But more importantly, this function will also be called automatically on certain fundamental events: for example, when the view has just been added to the hierarchy and needs to perform its first layout pass — or, of most interest to us — when its `bounds` change.
 
 The scrolling behaviour of `UIScrollView` is achieved by shifting the “window” through which you look at its contents, and when a user scrolls up or down, this window gets shifted vertically to reveal different parts of the scroll view’s coordinate plane, which holds its subviews. It is exactly the `bounds` property that specifies `UIScrollView`'s window position and size, and the system calls `setNeedsLayout()` each time either the position or size parameters change.
 
@@ -161,9 +161,9 @@ Ignore `rowViewSource` for now; its purpose will be disclosed more clearly later
 
 You may also notice the `RowView` type. It's a protocol constrained on `UIView` (so theoretically, every `UIView` subclass will be able to conform to it) — no need for special classes like `ListViewCell`! I intentionally don't show its declaration now, as we will discover the required methods later.
 
-### The layout algoritm
+### The layout algorithm
 
-Here goes our overriden `layoutSubviews()`:
+Here goes our overridden `layoutSubviews()`:
 
 ```swift
 override func layoutSubviews() {
@@ -213,7 +213,7 @@ I want you to appreciate how *incredibly* simple it is[^simple]. Yes, it uses so
 3. Retrieve a view for each visible row and assign it its frame,
 4. Done!
 
-As I discussed earlier, this method will be called each time the user scrolls the list and thus `bounds` get shifted up or down the coordinate system of the list view. This means that we are able to react quickly and reuse views as soon as they are allowed to disappear, thus keeping the amount of created views as low as possible. On the other hand, this means that this function will be called very often — very likely every frame — which means that this function has to be extremely efficient at what it's doing. As I alredy have noted in the comments, we are currently using a very inefficient search strategy[^ineffsearch], which we will need to take care of later. 
+As I discussed earlier, this method will be called each time the user scrolls the list and thus `bounds` get shifted up or down the coordinate system of the list view. This means that we are able to react quickly and reuse views as soon as they are allowed to disappear, thus keeping the amount of created views as low as possible. On the other hand, this means that this function will be called very often — very likely every frame — which means that this function has to be extremely efficient at what it's doing. As I already have noted in the comments, we are currently using a very inefficient search strategy[^ineffsearch], which we will need to take care of later. 
 
 ## The helper methods
 
