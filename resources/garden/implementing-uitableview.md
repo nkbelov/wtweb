@@ -172,7 +172,7 @@ override func layoutSubviews() {
     // layout stays unaffected
     super.layoutSubviews()
     
-    // Query the indices of rows that are wisible within the current bounds
+    // Query the indices of rows that are visible within the current bounds
     // Note that the current way is suboptimal: we are performing a linear search on ordered data;
     // at some point, we will refactor this to use a binary search, which is O(log n) instead of O(n)
     let visibles: [(Index, Vertical)] = verticals.filter { $0.value.intersects(bounds) }
@@ -341,7 +341,7 @@ func reload(dimensions: [Int], rowViewSource: @escaping (Index, ListView) -> Row
 }
 ```
 
-This method is used as the entry point to `ListView`, and its invocation does similar things as giving a `UITableView` its `dataSource()`: we supply the initial dimensions of our dataset and a closure that we already seen being used in `getView(for:)`. `ListView` also discards any previous layout if it existed and re-builds the new layout with a default row height. Lastly, it resets the scroll position (i.e. `bounds`) by shifting it to the top edge of the view. Because at this point we also already know the total scrollable height of the content, we set `contentSize.height` here as well.
+This method is used as the entry point to `ListView`, and its invocation does similar things as giving a `UITableView` its `dataSource()`: we supply the initial dimensions of our dataset and a closure that we have already seen being used in `getView(for:)`. `ListView` also discards any previous layout if it existed and re-builds the new layout with a default row height. Lastly, it resets the scroll position (i.e. `bounds`) by shifting it to the top edge of the view. Because at this point we also already know the total scrollable height of the content, we set `contentSize.height` here as well.
 
 I chose not to purge the reuse pool for simplicity as, in practice, when reloading a list view, we don't want anything dramatically different — we usually just want to show different data which is still of the same kind — and thus likely to use the same row view types. If you wish, though, you can totally remove all the subviews from the reuse pool by calling `removeFromSuperview()` on them first and then erasing the whole pool dictionary.
 
