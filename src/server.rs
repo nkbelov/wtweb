@@ -1,7 +1,9 @@
+#[allow(unused_imports)]
+
+mod message;
 
 use tokio::net::{TcpListener, TcpStream};
-use tokio_util::codec::{Framed, LinesCodec};
-use tokio_stream::StreamExt;
+use tokio_util::codec::FramedWrite;
 use futures::SinkExt;
 
 use axum::{
@@ -10,24 +12,16 @@ use axum::{
 };
 
 async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
-    let mut lines = Framed::new(tcp_stream, LinesCodec::new());
+    use tokio::time::{self, Duration};
 
-    while let Some(result) = lines.next().await {
-        match result {
-            Ok(line) => {
-                let response = line;
+    let (_, w) = tcp_stream.into_split();
+    let mut message_sink = FramedWrite::new(w, message::JsonCodec::new());
+    let mut interval = time::interval(Duration::from_millis(1000));
 
-                if let Err(e) = lines.send(response.as_str()).await {
-                    println!("error on sending response; error = {:?}", e);
-                }
-            }
-            Err(e) => {
-                println!("error on decoding from socket; error = {:?}", e);
-            }
-        }
+    loop {
+        interval.tick().await;
+        message_sink.send(message::Message::Text("HI".to_string())).await.unwrap();
     }
-
-    Ok(())
 }
 
 #[tokio::main]
