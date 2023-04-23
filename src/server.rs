@@ -5,13 +5,14 @@ mod render;
 
 use std::{net::SocketAddrV4};
 
-use tokio::{net::{TcpListener, TcpStream}};
-use tokio_util::codec::FramedWrite;
+use tokio::{net::{TcpListener, TcpStream}, fs::{read, read_to_string}};
+use tokio_util::{codec::FramedWrite, io::read_buf};
 use futures::SinkExt;
 
 use axum::{
     routing::get,
-    Router, response::{Html, IntoResponse, Result}, http::StatusCode,
+    Router, response::{Html, IntoResponse, Result}, http::{StatusCode, Response},
+    extract::Path
 };
 
 async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
@@ -30,9 +31,28 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
 async fn get_index() -> Result<impl IntoResponse, StatusCode> {
     use render::*;
 
-    let p = Page::Index { name: "kek".to_string() };
+    let p: Page = Page { r#type: PageType::Index, content:  Content::new() };
     let s = render(&p);
     Ok(Html::from(s))
+}
+
+async fn get_page(Path(name): Path<String>) -> Result<impl IntoResponse, StatusCode> {
+    println!("name {name}");
+    use render::*;
+
+    let p: Page = Page { r#type: PageType::Index, content: Content::new() };
+    let s = render(&p);
+    Ok(Html::from(s))
+}
+
+async fn get_styles() -> impl IntoResponse {
+    let s = read_to_string("./styles/output.css").await.unwrap();
+    println!("styles");
+    (
+        StatusCode::OK,
+        [(axum::http::header::CONTENT_TYPE, mime::TEXT_CSS.as_ref())],
+        s
+    )
 }
 
 #[tokio::main]
@@ -51,9 +71,11 @@ async fn main() {
         }
     });
 
-    // build our application with a single route
-    let app = Router::new().route("/", get(get_index));
-
+    let app = Router::new()
+        .route("/", get(get_index))
+        .route("/:path", get(get_page))
+        .route("/output.css", get(get_styles));
+        
     axum::Server::bind(&"127.0.0.1:8080".parse().unwrap())
         .serve(app.into_make_service())
         .await

@@ -4,10 +4,28 @@ use serde::{Serialize, Deserialize};
 use handlebars::Handlebars;
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(tag = "type", content = "content")]
 #[serde(rename_all = "camelCase")]
-pub enum Page {
-    Index { name: String }
+pub struct Content {
+
+}
+
+impl Content {
+    pub fn new() -> Self {
+        Self {  }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub enum PageType {
+    Index
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Page {
+    pub r#type: PageType,
+    pub content: Content
 }
 
 pub fn render(page: &Page) -> String {
