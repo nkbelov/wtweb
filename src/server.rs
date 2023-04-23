@@ -6,13 +6,13 @@ mod bookmark;
 
 use std::{net::SocketAddrV4};
 
-use tokio::{net::{TcpListener, TcpStream}, fs::{read, read_to_string}};
-use tokio_util::{codec::FramedWrite, io::read_buf};
+use tokio::{net::{TcpListener, TcpStream}, fs::{read_to_string}};
+use tokio_util::{codec::FramedWrite};
 use futures::SinkExt;
 
 use axum::{
     routing::get,
-    Router, response::{Html, IntoResponse, Result}, http::{StatusCode, Response},
+    Router, response::{Html, IntoResponse, Result}, http::{StatusCode},
     extract::Path
 };
 

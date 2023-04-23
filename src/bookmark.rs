@@ -1,4 +1,4 @@
-use pulldown_cmark::{Parser, Event, Event::*, Tag, CowStr, Alignment, CodeBlockKind, LinkType};
+use pulldown_cmark::{Event, Event::*, Tag, CowStr, Alignment, CodeBlockKind, LinkType};
 use std::collections::HashMap;
 use std::io::{self, Write};
 
@@ -443,6 +443,7 @@ where
 /// </ul>
 /// "#);
 /// ```
+#[allow(unused)]
 pub fn write_html<'a, I, W>(writer: W, iter: I) -> io::Result<()>
 where
     I: Iterator<Item = Event<'a>>,
