@@ -2,6 +2,7 @@
 
 mod message;
 mod render;
+mod bookmark;
 
 use std::{net::SocketAddrV4};
 
@@ -31,7 +32,9 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
 async fn get_index() -> Result<impl IntoResponse, StatusCode> {
     use render::*;
 
-    let p: Page = Page { r#type: PageType::Index, content:  Content::new() };
+    let markdown = read_to_string("posts/concurrency.md").await.unwrap();
+    let mut p: Page = Page { r#type: PageType::Index, content:  Content::new() };
+    p.content.text = Some(markdown);
     let s = render(&p);
     Ok(Html::from(s))
 }

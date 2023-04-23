@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.article .test {
+    @apply bg-blue-500 text-white font-semibold;
+}
+
+
 html {
   font-size: 16px; 
 }
