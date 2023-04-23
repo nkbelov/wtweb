@@ -1,6 +1,5 @@
 #[allow(unused_imports)]
 mod message;
-mod bookmark;
 mod render;
 
 use std::net::SocketAddrV4;
@@ -38,12 +37,11 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
 async fn get_index() -> Result<impl IntoResponse, StatusCode> {
     use render::*;
 
-    let markdown = read_to_string("posts/layout/layout.md").await.unwrap();
-    let mut p: Page = Page {
+    let p: Page = Page {
         r#type: PageType::Index,
         content: Content::new(),
     };
-    p.content.text = Some(markdown);
+    
     let s = render(&p);
     Ok(Html::from(s))
 }
@@ -52,10 +50,13 @@ async fn get_static(Path(name): Path<String>) -> Result<impl IntoResponse, Statu
     println!("name {name}");
     use render::*;
 
-    let p: Page = Page {
-        r#type: PageType::Index,
+    let markdown = read_to_string("posts/layout/layout.md").await.unwrap();
+    let mut p: Page = Page {
+        r#type: PageType::Article,
         content: Content::new(),
     };
+    
+    p.content.text = Some(markdown);
     let s = render(&p);
     Ok(Html::from(s))
 }

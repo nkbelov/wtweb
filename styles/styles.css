@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 .article h1 {
-  @apply text-3xl font-bold
+  @apply text-3xl font-bold text-accent text-center
 }
 
 .article h2 {
-  @apply text-2xl font-bold
+  @apply text-2xl font-bold text-accent
 }
 
 .article ul {
@@ -15,7 +15,7 @@
 }
 
 .article p {
-  @apply my-2
+  @apply my-3
 }
 
 .center-vh {
@@ -28,4 +28,8 @@ html {
 
 a {
   @apply text-link font-bold font-mono
+}
+
+abstract {
+  @apply block font-mono text-accent2 text-center text-sm my-10
 }

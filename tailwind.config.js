@@ -9,6 +9,7 @@ module.exports = {
         bg: '#0B0E14',
         card: '#0F131A',
         accent: '#59C2FF',
+        accent2: '#FFB454',
         link: '#7FD962',
       }
     },

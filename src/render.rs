@@ -1,10 +1,8 @@
 use std::{path::PathBuf, str::FromStr};
 
-use pulldown_cmark::Parser;
+use pulldown_cmark::{Parser, html::push_html};
 use serde::{Serialize, Deserialize};
 use handlebars::Handlebars;
-
-use crate::bookmark::push_html;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -21,7 +19,8 @@ impl Content {
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum PageType {
-    Index
+    Index,
+    Article
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
