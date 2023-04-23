@@ -2,15 +2,15 @@
 
 mod message;
 
-use std::net::SocketAddrV4;
+use std::{net::SocketAddrV4, env::current_dir};
 
-use tokio::net::{TcpListener, TcpStream};
+use tokio::{net::{TcpListener, TcpStream}, fs::read_to_string};
 use tokio_util::codec::FramedWrite;
 use futures::SinkExt;
 
 use axum::{
     routing::get,
-    Router,
+    Router, response::{Html, IntoResponse},
 };
 
 async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
@@ -24,6 +24,15 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
         interval.tick().await;
         message_sink.send(message::Message::Text("HI".to_string())).await?;
     }
+}
+
+async fn get_page() -> impl IntoResponse {
+    let mut base = current_dir().unwrap();
+    base.push("templates");
+    base.push("base.hbs");
+    let file = read_to_string(base).await.unwrap();
+    
+    Html::from(file)
 }
 
 #[tokio::main]
@@ -43,7 +52,7 @@ async fn main() {
     });
 
     // build our application with a single route
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let app = Router::new().route("/", get(get_page));
 
     axum::Server::bind(&"127.0.0.1:8080".parse().unwrap())
         .serve(app.into_make_service())
