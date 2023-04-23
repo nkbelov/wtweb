@@ -18,10 +18,14 @@
   @apply my-2
 }
 
-.center-vert {
+.center-vh {
   transform: translateY(calc(50vh - 50%));
 }
 
 html {
   font-size: 18px; 
+}
+
+a {
+  @apply text-link font-bold font-mono
 }

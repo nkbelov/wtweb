@@ -1,29 +1,69 @@
+{{#*inline "bigLink"}}
+    <a class="block text-xl py-2" href="{{href}}">&gt; {{text}}</a>
+{{/inline}}
+
+{{#*inline "smolLink"}}
+    <a class="block text-sm" href="{{href}}">&gt;{{text}}</a>
+{{/inline}}
+
+{{#*inline "section"}}
+    <h2 class="text-3xl text-accent font-bold">{{text}}</h2>
+{{/inline}}
+
+{{#*inline "sectionDescription"}}
+    <p class="mb-4">{{text}}</p>
+{{/inline}}
+
+{{#*inline "abstract"}}
+    <div class="basis-1/3 bg-card p-2">
+        <h3 class="text-lg text-accent font-bold text-center">Comprehensive guide to layout</h2>
+        <p class="text-xs mt-2">
+            Coordinate systems give geometrical or spatial meaning to the numbers that we use to describe sizes, positions, measurements and so on. A coordinate system specifies three things: the *origin*, the *unit* and the *directions* — the three components that you require to be able to tell where things are and how large they are. For instance, to precisely locate a building, you could say that "the building is 200 meters to the West from here" — whereby *here* is the origin, *meters* is the unit, and *West* is the direction.
+        </p>
+    </div>
+{{/inline}}
+
 <div class="grid grid-cols-5 ">
     <div class="col-span-2 flex flex-col">
-        <div class="relative center-vert">
-            <h1 class="text-[3rem]">Hi, I'm <span class="text-teal-500 font-bold font-mono">Nick</span></h1>
-            <h2 class="text-[1.3rem]">I do <span class="text-teal-500 font-mono">{programming}</span>, and I'm very good at it</h2>
-            <h3 class="mt-6 text-[1.15rem]">Currently iOS developer at <a class="font-bold text-teal-500 visited:text-teal-700" href="https://tbo.de/">TBO</a></h3>
-            <div>
-                <span>bio</span> <span>email</span>
+        <div class="relative center-vh">
+            <h1 class="text-[3rem]">Hi, I'm <span class="text-accent font-bold font-mono">WTEDST</span></h1>
+            <h2 class="text-[1.3rem]">I do <span class="text-accent font-mono">programming</span>, and I'm very good at it</h2>
+            <h3 class="mt-6 text-[1.15rem]">Currently iOS developer at <a class="font-bold text-accent" href="https://tbo.de/">TBO</a></h3>
+            <div class="mt-2 flex flex-row gap-2">
+                {{> smolLink href="bio" text="bio"}}
+                {{> smolLink href="bio" text="email"}}
+                {{> smolLink href="bio" text="insta"}}
+                {{> smolLink href="bio" text="twitter"}}
+                {{> smolLink href="bio" text="github"}}
             </div>
         </div>
     </div>
     <div class="col-span-3 mt-10 ml-10 flex flex-col gap-y-10 justify-between">
         <div>
-            <h2 class="text-3xl text-teal-500 font-mono font-bold">Writing</h2>
-            I have to say something about programming.
+            {{> section text="Writing"}}
+            {{> sectionDescription text="Mostly about programming." }}
+            <div class="grid grid-cols-3 gap-4 my-4">
+                {{> abstract }}
+                {{> abstract }}
+                {{> abstract }}
+            </div>
+            
+            {{> bigLink href="posts" text="See all"}}
         </div>
         
         <div>
-            <h2 class="text-3xl text-teal-500 font-mono font-bold">Library</h2>
-            Resources that I like.
+            {{> section text="Library"}}
+            {{> sectionDescription text="Resources that I like." }}
+            <ul>
+                <li>{{> bigLink href="library/programming" text="Programming"}}</li>
+                <li>{{> bigLink href="library/maths" text="Maths"}}</li>
+            </ul>
         </div>
 
         <div>
-            <h2 class="text-3xl text-teal-500 font-mono font-bold">Photography</h2>
-            I used to do some fashion photography. Maybe will do some more in the future. <br>
-            View on <span>Unsplash</span>
+            {{> section text="Photography"}}
+            {{> sectionDescription text="I used to do some fashion photography. Maybe will do some more in the future." }}
+            {{> bigLink href="https://unsplash.com/@wtedst" text="View on Unsplash"}}
         </div>
     </div>
 </div>

@@ -1,8 +1,17 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
+
 module.exports = {
   content: ["./**/*.{html,hbs}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        bg: '#0B0E14',
+        card: '#0F131A',
+        accent: '#59C2FF',
+        link: '#7FD962',
+      }
+    },
   },
   plugins: [],
 }
