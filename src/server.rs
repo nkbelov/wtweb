@@ -2,11 +2,13 @@
 mod message;
 mod render;
 
-use std::net::SocketAddrV4;
+use bytes::Bytes;
+use render::*;
+
+use std::{net::SocketAddrV4, fs::{read_dir, ReadDir, read_to_string}, collections::HashMap};
 
 use futures::SinkExt;
 use tokio::{
-    fs::read_to_string,
     net::{TcpListener, TcpStream},
 };
 use tokio_util::codec::FramedWrite;
@@ -34,35 +36,116 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
     }
 }
 
-async fn get_index() -> Result<impl IntoResponse, StatusCode> {
-    use render::*;
-
-    let p: Page = Page::new(Content::Index, false);
-    
-    let s = render(&p);
-    Ok(Html::from(s))
+fn not_found<T>(_: T) -> StatusCode {
+    StatusCode::NOT_FOUND
 }
 
-async fn get_static(Path(name): Path<String>) -> Result<impl IntoResponse, StatusCode> {
-    println!("name {name}");
-    use render::*;
+#[derive(Debug)]
+struct Post {
+    title: String,
+    abs: Option<String>,
+    text: String,
+    images: Vec<(String, Bytes)>
+}
 
-    let markdown = read_to_string("posts/layout/layout.md").await.unwrap();
-    let text = render_markdown(&markdown);
-    let p = Page::new(Content::Article { text }, false);
-    
-    let s = render(&p);
-    Ok(Html::from(s))
+impl Post {
+
+    fn from_dir(path: &std::path::Path) -> std::io::Result<Self> {
+        assert!(path.is_dir());
+        let dir = read_dir(path)?;
+        let mut md: Option<String> = None;
+        let mut images: Vec<(String, Bytes)> = vec![];
+
+        for entry in dir.into_iter().filter_map(|e| e.ok()) {
+            assert!(entry.file_type()?.is_file());
+            
+            if entry.file_name().to_str().unwrap().ends_with(".md") {
+                md = Some(read_to_string(entry.path())?);
+            } else {
+                let bytes = std::fs::read(entry.path())?;
+                let name = entry.file_name().to_str().unwrap().to_owned();
+                images.push((name, bytes.into()))
+            }
+        }
+
+        let md = md.unwrap();
+        let (title, abs) = extract_meta(&md);
+        let body = Some(render_markdown(&md));
+
+        let res = Self {
+            title,
+            abs,
+            text: body.unwrap(), // FIXME: Don't unwrap
+            images
+        };
+
+        Ok(res)
+    }
+
+    fn from_file(path: &std::path::Path) -> std::io::Result<Self> {
+        assert!(path.is_file());
+        let md = read_to_string(path)?;
+
+        let (title, abs) = extract_meta(&md);
+        let body = Some(render_markdown(&md));
+
+        let res = Self {
+            title,
+            abs,
+            text: body.unwrap(),
+            images: vec![]
+        };
+
+        Ok(res)
+    }
+}
+
+fn load_posts() -> HashMap<String, Post> {
+    let mut posts = HashMap::<String, Post>::new();
+    let base_dir = read_dir("posts").unwrap();
+
+    for entry in base_dir {
+        if let Ok(entry) = entry {
+            let name = entry.file_name().to_str().unwrap().to_owned();
+
+            if entry.file_type().unwrap().is_dir() {
+                let post = Post::from_dir(&entry.path());
+                posts.insert(name, post.unwrap());
+            } else {
+                let post = Post::from_file(&entry.path());
+                posts.insert(name, post.unwrap());
+            }
+        }
+    }
+
+    posts
 }
 
 async fn get_styles() -> impl IntoResponse {
-    let s = read_to_string("./styles/output.css").await.unwrap();
+    let s = read_to_string("./styles/output.css").unwrap();
     println!("styles");
     (
         StatusCode::OK,
         [(axum::http::header::CONTENT_TYPE, mime::TEXT_CSS.as_ref())],
         s,
     )
+}
+
+async fn get_post(Path(name): Path<String>) -> Result<impl IntoResponse, StatusCode> {
+    let posts = load_posts();
+    if let Some(post) = posts.get(&name) {
+        let page = Page::new(Content::Article { text: post.text.clone() }, false);
+        let html = render(&page);
+        Ok(Html::from(html))
+    } else {
+        Err(StatusCode::NOT_FOUND)
+    }
+}
+
+async fn get_index() -> Result<impl IntoResponse, StatusCode> {
+    let page: Page = Page::new(Content::Index, false);
+    let html = render(&page);
+    Ok(Html::from(html))
 }
 
 #[tokio::main]
@@ -82,7 +165,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(get_index))
-        .route("/:path", get(get_static))
+        .route("/posts/:name", get(get_post))
         .route("/output.css", get(get_styles));
 
     axum::Server::bind(&"127.0.0.1:8080".parse().unwrap())
