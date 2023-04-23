@@ -35,6 +35,7 @@ impl<'a> IntoIterator for &'a PostsManifest {
 
 #[derive(Debug, Serialize, Clone)]
 pub struct Post {
+    pub name: String,
     pub title: String,
     pub abs: Option<String>,
     pub text: String,
@@ -43,11 +44,12 @@ pub struct Post {
 
 impl Post {
 
-    fn try_from(path: &std::path::Path) -> std::io::Result<Self> {
+    fn try_from(path: &std::path::Path, name: String) -> std::io::Result<Self> {
         let markdown = read_to_string(path)?;
         let (title, abs) = extract_meta(&markdown);
         let text = render_markdown(&markdown);
         Ok(Post {
+            name,
             title,
             abs,
             text,
@@ -97,7 +99,7 @@ impl Posts {
                     let filename = item.file_name().to_str().unwrap().to_owned();
                     // FIXME: Update when `is_some_and` is available.
                     if filename.ends_with(".md") {
-                        if let Ok(mut post) = Post::try_from(&item.path()) {
+                        if let Ok(mut post) = Post::try_from(&item.path(), entry.name.clone()) {
                             post.published = entry.published;
                             posts.insert(entry.name.clone(), post);
                             post_list.push(entry.name.clone());
@@ -115,7 +117,7 @@ impl Posts {
                 // Should be just a single post with this name;
                 // the path doesn't contain the extension yet, so set it.
                 path.set_extension("md");
-                if let Ok(mut post) = Post::try_from(&path) {
+                if let Ok(mut post) = Post::try_from(&path, entry.name.clone()) {
                     post.published = entry.published;
                     posts.insert(entry.name.clone(), post);
                     post_list.push(entry.name.clone());

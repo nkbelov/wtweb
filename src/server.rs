@@ -75,6 +75,14 @@ async fn get_img(Path((post_name, img_name)): Path<(String, String)>) -> Respons
     }
 }
 
+async fn get_posts() -> Result<impl IntoResponse, StatusCode> {
+    let posts = Posts::load();
+    let previews = posts.previews();
+    let page: Page = Page::new(Content::Posts { posts: previews }, false);
+    let html = render(&page);
+    Ok(Html::from(html))
+}
+
 async fn get_index() -> Result<impl IntoResponse, StatusCode> {
     let posts = Posts::load();
     let previews = posts.previews();
@@ -100,6 +108,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(get_index))
+        .route("/posts", get(get_posts))
         .route("/posts/:name", get(get_post))
         .route("/posts/:name/:img", get(get_img))
         .route("/output.css", get(get_styles));

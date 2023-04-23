@@ -14,6 +14,7 @@ use crate::posts::Post;
 #[serde(tag = "type")]
 pub enum Content {
     Index { posts: Vec<Post> },
+    Posts { posts: Vec<Post> },
     Article { text: String }
 }
 

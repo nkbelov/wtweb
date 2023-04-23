@@ -4,6 +4,8 @@
 
 It is early 2023 at the time of writing this. If you're reading this, already knowing that SwiftUI exists and maybe having written apps with SwiftUI, you might ask, why even care about UIKit, a technology that is seemingly becoming obsolete.
 
+![Whatever](layout/cgrect.png)
+
 If the paragraph above convinced you — or you already came here with a good understanding of the shortcomings of SwiftUI — welcome. In this text, I will go through the majority of UIKit's APIs for view layout.
 
 This is not a text for absolute beginners. If you're reading this, you should be comfortable with programming in general, and although I'm not referring to any advanced features particular to Swift or any other language. This is also not a tutorial on how to build anything particular. Instead, this is a text that aims to comprehensively discuss one particular set of `UIKit` APIs, also filling the gaps of its documentation.   

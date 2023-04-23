@@ -1,9 +1,9 @@
 {{#*inline "bigLink"}}
-    <a class="block text-xl py-2" href="{{href}}">&gt; {{text}}</a>
+    <a class="block text-link font-mono text-xl py-2" href="{{href}}">&gt; {{text}}</a>
 {{/inline}}
 
 {{#*inline "smolLink"}}
-    <a class="block text-sm" href="{{href}}">&gt;{{text}}</a>
+    <a class="block text-link font-mono text-sm" href="{{href}}">&gt;{{text}}</a>
 {{/inline}}
 
 {{#*inline "section"}}
@@ -11,26 +11,28 @@
 {{/inline}}
 
 {{#*inline "sectionDescription"}}
-    <p class="mb-4">{{text}}</p>
+    <p class="mb-4 mt-1">{{text}}</p>
 {{/inline}}
 
 {{!-- Takes `PostPreview` --}}
 {{#*inline "postPreview"}}
-    <div class="basis-1/3 bg-card p-2">
-        <h3 class="text-lg text-accent font-bold text-center">{{title}}</h2>
-        <p class="text-xs mt-2">
-            {{abs}}
-        </p>
-    </div>
+    <a href="{{name}}">
+        <div class="basis-1/3 bg-card p-2">
+            <h3 class="text-lg text-accent font-bold text-center">{{title}}</h2>
+            <p class="text-xs mt-2">
+                {{abs}}
+            </p>
+        </div>
+    </a>
 {{/inline}}
 
 <div class="grid grid-cols-5 ">
     <div class="col-span-2 flex flex-col">
         <div class="relative center-vh">
-            <h1 class="text-[3rem]">Hi, I'm <span class="text-accent font-bold font-mono">WTEDST</span></h1>
-            <h2 class="text-[1.3rem]">I do <span class="text-accent font-mono">programming</span>, and I'm very good at it</h2>
-            <h3 class="mt-6 text-[1.15rem]">Currently iOS developer at <a class="font-bold text-accent" href="https://tbo.de/">TBO</a></h3>
-            <div class="mt-2 flex flex-row gap-2">
+            <h1 class="text-[3rem]">Hi, I'm <span class="text-accent font-bold">WTEDST</span></h1>
+            <h2 class="text-[1.3rem]">I do <span class="text-accent">programming</span>, and I'm very good at it</h2>
+            <h3 class="mt-6 text-[1.15rem]">Currently iOS developer at <a class="text-link font-mono" href="https://tbo.de/">&gt;TBO</a></h3>
+            <div class="flex flex-row gap-2 border border-1 border-link p-2 mt-4">
                 {{> smolLink href="bio" text="bio"}}
                 {{> smolLink href="bio" text="email"}}
                 {{> smolLink href="bio" text="insta"}}
