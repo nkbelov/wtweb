@@ -1,19 +1,23 @@
 #[allow(unused_imports)]
-
 mod message;
-mod render;
 mod bookmark;
+mod render;
 
-use std::{net::SocketAddrV4};
+use std::net::SocketAddrV4;
 
-use tokio::{net::{TcpListener, TcpStream}, fs::{read_to_string}};
-use tokio_util::{codec::FramedWrite};
 use futures::SinkExt;
+use tokio::{
+    fs::read_to_string,
+    net::{TcpListener, TcpStream},
+};
+use tokio_util::codec::FramedWrite;
 
 use axum::{
+    extract::Path,
+    http::StatusCode,
+    response::{Html, IntoResponse, Result},
     routing::get,
-    Router, response::{Html, IntoResponse, Result}, http::{StatusCode},
-    extract::Path
+    Router,
 };
 
 async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
@@ -25,25 +29,33 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
 
     loop {
         interval.tick().await;
-        message_sink.send(message::Message::Text("HI".to_string())).await?;
+        message_sink
+            .send(message::Message::Text("HI".to_string()))
+            .await?;
     }
 }
 
 async fn get_index() -> Result<impl IntoResponse, StatusCode> {
     use render::*;
 
-    let markdown = read_to_string("posts/concurrency.md").await.unwrap();
-    let mut p: Page = Page { r#type: PageType::Index, content:  Content::new() };
+    let markdown = read_to_string("posts/layout/layout.md").await.unwrap();
+    let mut p: Page = Page {
+        r#type: PageType::Index,
+        content: Content::new(),
+    };
     p.content.text = Some(markdown);
     let s = render(&p);
     Ok(Html::from(s))
 }
 
-async fn get_page(Path(name): Path<String>) -> Result<impl IntoResponse, StatusCode> {
+async fn get_static(Path(name): Path<String>) -> Result<impl IntoResponse, StatusCode> {
     println!("name {name}");
     use render::*;
 
-    let p: Page = Page { r#type: PageType::Index, content: Content::new() };
+    let p: Page = Page {
+        r#type: PageType::Index,
+        content: Content::new(),
+    };
     let s = render(&p);
     Ok(Html::from(s))
 }
@@ -54,14 +66,13 @@ async fn get_styles() -> impl IntoResponse {
     (
         StatusCode::OK,
         [(axum::http::header::CONTENT_TYPE, mime::TEXT_CSS.as_ref())],
-        s
+        s,
     )
 }
 
 #[tokio::main]
 async fn main() {
-    
-    // TODO: possible different way? 
+    // TODO: possible different way?
     // TODO: join with the web server?
     // TODO: auto-restart on failure?
     tokio::spawn(async move {
@@ -76,9 +87,9 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(get_index))
-        .route("/:path", get(get_page))
+        .route("/:path", get(get_static))
         .route("/output.css", get(get_styles));
-        
+
     axum::Server::bind(&"127.0.0.1:8080".parse().unwrap())
         .serve(app.into_make_service())
         .await
