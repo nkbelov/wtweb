@@ -2,6 +2,8 @@ use tokio_util::codec::{Encoder, Decoder};
 use bytes::{BytesMut, Buf};
 use serde::{Serialize, Deserialize};
 
+pub const PORT: u16 = 6379;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Message {
     Text(String)

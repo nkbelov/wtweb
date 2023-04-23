@@ -2,6 +2,8 @@
 
 mod message;
 
+use std::net::SocketAddrV4;
+
 use tokio::net::{TcpListener, TcpStream};
 use tokio_util::codec::FramedWrite;
 use futures::SinkExt;
@@ -20,7 +22,7 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
 
     loop {
         interval.tick().await;
-        message_sink.send(message::Message::Text("HI".to_string())).await.unwrap();
+        message_sink.send(message::Message::Text("HI".to_string())).await?;
     }
 }
 
@@ -31,7 +33,8 @@ async fn main() {
     // TODO: join with the web server?
     // TODO: auto-restart on failure?
     tokio::spawn(async move {
-        let listener = TcpListener::bind("127.0.0.1:6379").await.unwrap();
+        let addr = SocketAddrV4::new("127.0.0.1".parse().unwrap(), message::PORT);
+        let listener = TcpListener::bind(addr).await.unwrap();
         loop {
             // The second item contains the IP and port of the new connection.
             let (socket, _) = listener.accept().await.unwrap();

@@ -2,6 +2,8 @@
 
 mod message;
 
+use std::net::SocketAddrV4;
+
 use message::*;
 
 use tokio::net::TcpStream;
@@ -10,7 +12,8 @@ use tokio_stream::StreamExt;
 
 #[tokio::main]
 async fn main() {
-    let stream = TcpStream::connect("127.0.0.1:6379").await.unwrap();
+    let addr = SocketAddrV4::new("127.0.0.1".parse().unwrap(), message::PORT);
+    let stream = TcpStream::connect(addr).await.unwrap();
     let (r, _) = stream.into_split();
 
     let mut message_stream = FramedRead::new(r, JsonCodec::new());
