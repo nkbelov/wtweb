@@ -10,7 +10,7 @@ use futures::SinkExt;
 
 use axum::{
     routing::get,
-    Router, response::{Html, IntoResponse},
+    Router, response::{Html, IntoResponse, Result}, http::StatusCode,
 };
 
 async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
@@ -26,13 +26,14 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
     }
 }
 
-async fn get_page() -> impl IntoResponse {
+async fn get_page() -> Result<impl IntoResponse, StatusCode> {
     let mut base = current_dir().unwrap();
     base.push("templates");
     base.push("base.hbs");
-    let file = read_to_string(base).await.unwrap();
-    
-    Html::from(file)
+    match read_to_string(base).await {
+        Ok(file) => Ok(Html::from(file)),
+        Err(_) => Err(StatusCode::NOT_FOUND)
+    }
 }
 
 #[tokio::main]
