@@ -27,23 +27,17 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
     }
 }
 
-async fn get_page() -> Result<impl IntoResponse, StatusCode> {
-    let mut base = current_dir().unwrap();
-    base.push("templates");
-    base.push("base.hbs");
-    match read_to_string(base).await {
-        Ok(file) => Ok(Html::from(file)),
-        Err(_) => Err(StatusCode::NOT_FOUND)
-    }
-}
-
-#[tokio::main]
-async fn main() {
+async fn get_index() -> Result<impl IntoResponse, StatusCode> {
     use render::*;
 
     let p = Page::Index { name: "kek".to_string() };
     let s = render(&p);
-    println!("{s}");
+    Ok(Html::from(s))
+}
+
+#[tokio::main]
+async fn main() {
+    
     // TODO: possible different way? 
     // TODO: join with the web server?
     // TODO: auto-restart on failure?
@@ -58,7 +52,7 @@ async fn main() {
     });
 
     // build our application with a single route
-    let app = Router::new().route("/", get(get_page));
+    let app = Router::new().route("/", get(get_index));
 
     axum::Server::bind(&"127.0.0.1:8080".parse().unwrap())
         .serve(app.into_make_service())
