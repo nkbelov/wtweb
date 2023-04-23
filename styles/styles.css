@@ -2,11 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-.article .test {
-    @apply bg-blue-500 text-white font-semibold;
+.article h1 {
+  @apply text-3xl font-bold
 }
 
+.article h2 {
+  @apply text-2xl font-bold
+}
+
+.article ul {
+  @apply list-disc list-inside
+}
+
+.article p {
+  @apply my-2
+}
+
+.center-vert {
+  transform: translateY(calc(50vh - 50%));
+}
 
 html {
-  font-size: 16px; 
+  font-size: 18px; 
 }
