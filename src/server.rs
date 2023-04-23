@@ -1,6 +1,7 @@
 #[allow(unused_imports)]
 
 mod message;
+mod render;
 
 use std::{net::SocketAddrV4, env::current_dir};
 
@@ -38,7 +39,11 @@ async fn get_page() -> Result<impl IntoResponse, StatusCode> {
 
 #[tokio::main]
 async fn main() {
+    use render::*;
 
+    let p = Page::Index { name: "kek".to_string() };
+    let s = render(&p);
+    println!("{s}");
     // TODO: possible different way? 
     // TODO: join with the web server?
     // TODO: auto-restart on failure?

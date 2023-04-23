@@ -5,7 +5,8 @@
 </head>
 <body>
 	<main>
-		Hello!
+		{{!-- Lookup variable "type" in the current scope and pass "content" as context --}}
+    	{{> (lookup this "type") this.content }}
 	</main>
 </body>
 </html>
