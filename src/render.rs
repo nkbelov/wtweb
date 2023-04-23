@@ -4,20 +4,20 @@ use pulldown_cmark::{Parser, html::push_html, Event, Tag, HeadingLevel, escape::
 use serde::Serialize;
 use handlebars::Handlebars;
 
-use crate::PostPreview;
+use crate::posts::Post;
 
 /// Each variant directly corresponds to a partial template,
 /// and each field in the variant corresponds to a
 /// variable the partial accesses.
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum Content {
-    Index { posts: Vec<PostPreview> },
+    Index { posts: Vec<Post> },
     Article { text: String }
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Page {
     content: Content,

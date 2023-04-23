@@ -1,0 +1,17 @@
+# Contains only technical description
+# of posts, as well as builds a list to order them by
+#
+# The content, as well as the title etc. has to be
+# parsed out of the .md documents themselves.
+
+[[posts]]
+name = "layout"
+published = false
+
+[[posts]]
+name = "but-i-dont-know-maths"
+published = false
+
+[[posts]]
+name = "concurrency"
+published = false
