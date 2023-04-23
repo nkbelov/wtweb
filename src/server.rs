@@ -3,9 +3,9 @@
 mod message;
 mod render;
 
-use std::{net::SocketAddrV4, env::current_dir};
+use std::{net::SocketAddrV4};
 
-use tokio::{net::{TcpListener, TcpStream}, fs::read_to_string};
+use tokio::{net::{TcpListener, TcpStream}};
 use tokio_util::codec::FramedWrite;
 use futures::SinkExt;
 
