@@ -1,4 +1,4 @@
-use std::{path::PathBuf, str::FromStr, string::ParseError};
+use std::{path::PathBuf, str::FromStr};
 
 use pulldown_cmark::{Parser, html::push_html, Event, Tag, HeadingLevel, escape::escape_html};
 use serde::Serialize;

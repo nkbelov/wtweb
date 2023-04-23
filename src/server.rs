@@ -17,7 +17,7 @@ use tokio_util::codec::FramedWrite;
 use axum::{
     extract::Path,
     http::StatusCode,
-    response::{Html, IntoResponse, Result},
+    response::{Html, IntoResponse, Result, Response},
     routing::get,
     Router,
 };
@@ -37,10 +37,9 @@ async fn start_console(tcp_stream: TcpStream) -> std::io::Result<()> {
     }
 }
 
-fn not_found<T>(_: T) -> StatusCode {
+fn to_not_found<T>(_: T) -> StatusCode {
     StatusCode::NOT_FOUND
 }
-
 
 async fn get_styles() -> impl IntoResponse {
     let s = read_to_string("./styles/output.css").unwrap();
@@ -60,6 +59,19 @@ async fn get_post(Path(name): Path<String>) -> Result<impl IntoResponse, StatusC
         Ok(Html::from(html))
     } else {
         Err(StatusCode::NOT_FOUND)
+    }
+}
+
+async fn get_img(Path((post_name, img_name)): Path<(String, String)>) -> Response {
+    let posts = Posts::load();
+    if let Some((bytes, mime))= posts.get_image(&post_name, &img_name) {
+        return (
+            StatusCode::OK,
+            [(axum::http::header::CONTENT_TYPE, mime)],
+            bytes.clone()
+        ).into_response()
+    } else {
+        (StatusCode::NOT_FOUND).into_response()
     }
 }
 
@@ -89,6 +101,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(get_index))
         .route("/posts/:name", get(get_post))
+        .route("/posts/:name/:img", get(get_img))
         .route("/output.css", get(get_styles));
 
     axum::Server::bind(&"127.0.0.1:8080".parse().unwrap())

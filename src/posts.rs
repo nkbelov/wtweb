@@ -56,6 +56,14 @@ impl Post {
     }
 }
 
+fn mime(ext: &str) -> Option<&'static str> {
+    match ext {
+        "png" => Some("image/png"),
+        "jpg" | "jpeg" => Some("image/jpeg"),
+        _ => None
+    }
+}
+
 #[derive(Debug)]
 pub struct Posts {
     post_list: Vec<String>,
@@ -96,8 +104,8 @@ impl Posts {
                         }
                     } else {
                         // Assumed to be an image, but can really be anything else.
-                        let compound_name = entry.name.clone() + &filename;
-                        let Ok(bytes) = std::fs::read(&path) else { continue; };
+                        let compound_name = entry.name.clone() + "/" + &filename;
+                        let Ok(bytes) = std::fs::read(&item.path()) else { continue; };
                         let bytes = Bytes::from(bytes);
                         images.insert(compound_name, bytes);
                         // TODO: Impl alerting if img already present
@@ -130,6 +138,16 @@ impl Posts {
     pub fn get_post(&self, name: &str) -> Option<&Post> {
         self.posts.get(name)
     }
+
+    pub fn get_image(&self, post_name: &str, image_name: &str) -> Option<(&Bytes, &'static str)> {
+        let compound_name = post_name.to_string() + "/" + image_name;
+        let Some(bytes) = self.images.get(&compound_name) else { return None; };
+
+        // Get whatever is the trailing part after the dot. Because we just found an image,
+        // it's a valid extension for which we have a mime type.
+        let ext = image_name.rsplit_once(".").unwrap().1;
+        return Some((bytes, mime(ext).unwrap()))
+    }  
 
     pub fn previews(&self) -> Vec<Post> {
         self.post_list.iter().take(3).map(|name| self.posts.get(name).unwrap().clone()).collect()
