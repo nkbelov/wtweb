@@ -1,21 +1,23 @@
 use std::{path::PathBuf, str::FromStr, string::ParseError};
 
 use pulldown_cmark::{Parser, html::push_html, Event, Tag, HeadingLevel, escape::escape_html};
-use serde::{Serialize, Deserialize};
+use serde::Serialize;
 use handlebars::Handlebars;
+
+use crate::PostPreview;
 
 /// Each variant directly corresponds to a partial template,
 /// and each field in the variant corresponds to a
 /// variable the partial accesses.
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum Content {
-    Index,
+    Index { posts: Vec<PostPreview> },
     Article { text: String }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Page {
     content: Content,
@@ -27,7 +29,7 @@ impl Page {
 
     pub fn new(content: Content, boring: bool) -> Self {
         // Header should be visible for every page except index
-        let header = !(matches!(content, Content::Index));
+        let header = !(matches!(content, Content::Index {..}));
 
         Self {
             content,

@@ -4,6 +4,7 @@ mod render;
 
 use bytes::Bytes;
 use render::*;
+use serde::Serialize;
 
 use std::{net::SocketAddrV4, fs::{read_dir, ReadDir, read_to_string}, collections::HashMap};
 
@@ -47,6 +48,17 @@ struct Post {
     text: String,
     images: Vec<(String, Bytes)>
 }
+
+impl Post {
+
+    fn to_preview(&self) -> PostPreview {
+        PostPreview { title: self.title.clone(), abs: self.abs.clone() }
+    }
+
+}
+
+#[derive(Debug, Serialize, Clone)]
+struct PostPreview { title: String, abs: Option<String> }
 
 impl Post {
 
@@ -143,7 +155,9 @@ async fn get_post(Path(name): Path<String>) -> Result<impl IntoResponse, StatusC
 }
 
 async fn get_index() -> Result<impl IntoResponse, StatusCode> {
-    let page: Page = Page::new(Content::Index, false);
+    let posts = load_posts();
+    let previews = posts.iter().map(|(_, p)| p.to_preview()).collect();
+    let page: Page = Page::new(Content::Index { posts: previews }, false);
     let html = render(&page);
     Ok(Html::from(html))
 }
